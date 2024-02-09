@@ -1,118 +1,136 @@
+// src/App.js
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MovieList from './movieList';
 import Filter from './filter';
 import MovieDescription from './components/MovieDescription';
-import Home from './components/Home';
-import { Routes, Route} from 'react-router-dom'
+import './App.css'
 
 const App = () => {
   const [movies, setMovies] = useState([
+
+    {  
+          title: "Dark October",
+          description: 'Dark October is a movie based on the true-life story of four students from the University of Port-Harcourt who were wrongfully accused of theft in the Aluu community, Port-Harcourt and were lynched to death by a mob in October 2012.',
+          poster:'dark october.jpg',
+          rating: '8.8',
+          },
     {
-      id: 1,
-      title: "Dark October",
-      description: "Dark October is a movie based on the true-life story  of four students from the University of Port-Harcourt who were wrongfully accused of theft in the Aluu community, Port-Harcourt and were lynched to death by a mob in October 2012.",
-      poster: "dark october.jpg" ,
-      trialerLink: "https://www.youtube.com/embed/eJVxo6EXTQ0",
-      rating: 8.8 
+      title: 'Inception',
+      description: 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.',
+      poster: 'https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p7825626_p_v8_af.jpg',
+      rating: 4.8,
+      trailerLink: 'https://www.youtube.com/embed/YoHD9XEInc0',
     },
-    // Add more movies here
+
+
+    {
+      title: 'Furiosa',
+      description: 'The origin story of renegade warrior Furiosa before her encounter and teamup with Mad Max.',
+      poster: 'https://m.media-amazon.com/images/M/MV5BNjYxZjY3ZDAtNDc1Mi00YzMxLWI4MWEtNzQwZGExYmMzODFhXkEyXkFqcGdeQXVyNzAwMjU2MTY@._V1_FMjpg_UX1000_.jpg',
+      rating: 7.9,
+      trailerLink: 'https://www.youtube.com/embed/XJMuhwVlca4',
+    },
+    {
+      title: 'Game of Thrones',
+      description: 'Nine noble families fight for control over the lands of Westeros, while an ancient enemy returns after being dormant for a millennia.',
+      poster: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d1/Game_of_Thrones_Season_6.jpeg/220px-Game_of_Thrones_Season_6.jpeg',
+      rating: 9.2,
+      trailerLink: 'https://www.youtube.com/embed/rlR4PJn8b8I',
+    },
+    {
+      title: 'Avengers: Endgame',
+      description: 'After the devastating events of Avengers: Infinity War (2018), the universe is in ruins. With the help of remaining allies, the Avengers assemble once more in order to reverse Thanos actions and restore balance to the universe.',
+      poster: 'https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg',
+      rating: 8.4,
+      trailerLink: 'https://www.youtube.com/embed/TcMBFSGVi1c',
+    },
+    // Add more movies as needed
   ]);
+
   const [titleFilter, setTitleFilter] = useState('');
-  const [ratingFilter, setRatingFilter] = useState(0);
+  const [ratingFilter, setRatingFilter] = useState('');
+
   const [newMovie, setNewMovie] = useState({
     title: '',
     description: '',
-    posterURL: '',
-    rating: 0
+    poster: '',
+    rating: 0,
+    trailerLink: '',
   });
-
-  const handleTitleChange = (e) => {
-    setTitleFilter(e.target.value);
-  };
-
-  const handleRatingChange = (e) => {
-    setRatingFilter(e.target.value);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewMovie(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
 
   const addMovie = () => {
-    if (newMovie.title && newMovie.description && newMovie.posterURL && newMovie.rating) {
-      setMovies(prevMovies => [...prevMovies, { ...newMovie, id: Date.now() }]);
-      setNewMovie({
-        title: '',
-        description: '',
-        posterURL: '',
-        rating: 0
-      });
-    } else {
-      alert("Please fill in all fields.");
-    }
+    setMovies([...movies, newMovie]);
+    setNewMovie({
+      title: '',
+      description: '',
+      poster: '',
+      rating: 0,
+      trailerLink: '',
+    });
   };
 
-  const filteredMovies = movies.filter(movie => {
-    return (
+  const filteredMovies = movies.filter(
+    (movie) =>
       movie.title.toLowerCase().includes(titleFilter.toLowerCase()) &&
-      movie.rating >= ratingFilter
-    );
-  });
+      movie.rating >= parseFloat(ratingFilter)
+  );
 
   return (
-  
-    <div className="app">
-      <Routes>
-        <Route path= '/' element={<Home/>}/>
-        <Route path= '/movie/:id' element={<MovieDescription />}/>
-      </Routes>
+    <Router>
+      <div className="app">
+        <h1>Movie App</h1>
 
-      <h1>NetMovie</h1>
-        <div className='filter'>
-          <Filter
-           handleTitleChange={handleTitleChange}
-           handleRatingChange={handleRatingChange}
-         />
-      </div>
-
-      <MovieList movies={filteredMovies} />
-      <div className="add-movie">
-        <h2>Add New Movie</h2>
-        <input
+        <Routes>
+          <Route path="/movie/:id" element={<MovieDescription movies={movies} />} />
+          <Route path="/" element={
+            <>
+              <Filter
+                titleFilter={titleFilter}
+                ratingFilter={ratingFilter}
+                onTitleChange={setTitleFilter}
+                onRatingChange={setRatingFilter}
+              />
+              <MovieList movies={filteredMovies} />
+              <div className="add-movie-form">
+                <h2>Add a New Movie</h2>
+                {/* ... (rest of the code remains unchanged) */}
+                <input
           type="text"
-          name="title"
           placeholder="Title"
           value={newMovie.title}
-          onChange={handleInputChange}
+          onChange={(e) => setNewMovie({ ...newMovie, title: e.target.value })}
         />
-        <input
-          type="text"
-          name="description"
+        <textarea
           placeholder="Description"
           value={newMovie.description}
-          onChange={handleInputChange}
-        />
+          onChange={(e) => setNewMovie({ ...newMovie, description: e.target.value })}
+        ></textarea>
         <input
           type="text"
-          name="posterURL"
           placeholder="Poster URL"
-          value={newMovie.posterURL}
-          onChange={handleInputChange}
+          value={newMovie.poster}
+          onChange={(e) => setNewMovie({ ...newMovie, posterURL: e.target.value })}
         />
         <input
           type="number"
-          name="rating"
           placeholder="Rating"
           value={newMovie.rating}
-          onChange={handleInputChange}
+          onChange={(e) => setNewMovie({ ...newMovie, rating: parseFloat(e.target.value) })}
         />
-        <button onClick={addMovie}>Add Movie</button>
+         <input
+          type="text"
+          placeholder="Trailer Link"
+          value={newMovie.trailerLink}
+          onChange={(e) => setNewMovie({ ...newMovie, trailerLink: e.target.value })}
+
+        />
+              </div>
+            </>
+          } />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 };
 
